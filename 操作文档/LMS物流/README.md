@@ -66,3 +66,23 @@ LMS（Logistics Management System）是保沣集团的物流管理系统，覆�
 | 云当网 Trackingeyes | EIR（设备交接单）回传与运单跟踪 |
 | IPC / 箱动态 | 集装箱动态信息 |
 | 船东官网 | 船期/开港信息查询 |
+
+## 7. 开发与测试参考
+
+**代码仓库**（本机）：
+
+| 仓库 | 路径 | 说明 |
+|------|------|------|
+| lms_web | `/Users/wuhanchu/project/baofeng/lms_web` | 前端（umi/React），路由定义在 `config/routes.ts` |
+| lms_service | `/Users/wuhanchu/project/baofeng/lms_service` | 后端（Python），模块：approve/inquiry/k3/line/maintenance/map/message/overseas/public/quotation/tracking/yard |
+
+**数据库**：PostgreSQL `postgres@192.168.31.226:31014`（测试库，只读查询请走 db_dev MCP 的 `db_dev_query` 工具）。
+
+**测试账号**（密码请联系管理员获取）：
+
+| 账号 | 用途 |
+|------|------|
+| 18225283（吴汉楚） | 内部物流管理员视角，登录 PC 门户验证 |
+| xmyd | 供应商（货代）视角，验证协同平台 PC 端与公众号移动端 |
+
+> 测试环境入口：<http://192.168.111.243:31016>（对内门户与移动端同域）。
