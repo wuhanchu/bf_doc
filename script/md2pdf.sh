@@ -3,30 +3,13 @@
 # 用法: script/md2pdf.sh [目标文件夹或 md 文件]
 #   缺省目标 = 仓库根（整个仓库的 md）
 #   输出     = export/<原相对路径>.pdf，目录结构与源一致
+#   MD2PDF_JOBS=并行数（默认 4）；未变更的 md 自动跳过
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 EXPORT="$ROOT/export"
 CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-
-# ---- 样式（A4、中文字体、表格边框、图片限宽）----
-CSS='@page { size: A4; margin: 18mm 15mm; }
-body { font-family: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif; font-size: 11pt; line-height: 1.6; color: #222; }
-h1 { font-size: 1.6em; border-bottom: 2px solid #2f6fad; padding-bottom: 6px; }
-h2 { font-size: 1.3em; border-bottom: 1px solid #ccc; padding-bottom: 4px; margin-top: 1.6em; }
-h3 { font-size: 1.15em; }
-table { border-collapse: collapse; width: 100%; margin: 8px 0; }
-th, td { border: 1px solid #999; padding: 5px 8px; text-align: left; word-break: break-word; }
-th { background: #f2f6fa; }
-img { max-width: 100%; }
-code { background: #f5f5f5; padding: 1px 4px; border-radius: 3px; font-size: 0.9em; }
-pre { background: #f5f5f5; padding: 8px; overflow-x: auto; }
-blockquote { border-left: 4px solid #2f6fad; margin-left: 0; padding-left: 12px; color: #555; }'
-
-TMPDIR_MD="$(mktemp -d)"
-CSS_FILE="$TMPDIR_MD/style.css"
-printf '%s\n' "$CSS" > "$CSS_FILE"
-trap 'rm -rf "$TMPDIR_MD"' EXIT
+JOBS="${MD2PDF_JOBS:-4}"
 
 TARGET="${1:-}"
 if [ -z "$TARGET" ]; then
@@ -35,21 +18,37 @@ elif [ ! -e "$TARGET" ]; then
   TARGET="$ROOT/$TARGET"
 fi
 
-if [ -f "$TARGET" ] && [[ "$TARGET" == *.md ]]; then
-  MD_FILES="$TARGET"
-else
-  MD_FILES="$(find "$TARGET" -name '*.md' \
-    -not -path '*/.git/*' -not -path "$EXPORT/*" -not -path '*/attach/*' | sort)"
-fi
-
-count=0
-fail=0
-for md in $MD_FILES; do
+if [ "${1:-}" = "--one" ]; then
+  # 内部入口：转换单个文件（由下方 xargs 并行调用）
+  shift
+  md="$1"
   rel="${md#"$ROOT"/}"
   out="$EXPORT/${rel%.md}.pdf"
+  # md 与同目录 attach/ 都没有比 PDF 新 → 跳过
+  if [ -f "$out" ] && [ "$out" -nt "$md" ] \
+     && ! find "$(dirname "$md")/attach" -newer "$out" -print -quit 2>/dev/null | grep -q .; then
+    echo "SKIP $rel"
+    exit 0
+  fi
+  tmp="$(mktemp -d)"
+  trap 'rm -rf "$tmp"' EXIT
+  CSS_FILE="$ROOT/script/pandoc-style.css"
   mkdir -p "$(dirname "$out")"
-  html="$TMPDIR_MD/$(echo "$rel" | tr '/' '_').html"
-
+  # 引擎：优先 weasyprint（快），否则 Chrome headless
+  WP="$(command -v weasyprint || true)"
+  if [ -z "$WP" ] && [ -x "$HOME/Library/Python/3.13/bin/weasyprint" ]; then
+    WP="$HOME/Library/Python/3.13/bin/weasyprint"
+  fi
+  if [ -n "$WP" ]; then
+    pandoc "$md" --from markdown \
+      --pdf-engine="$WP" --css="$CSS_FILE" \
+      --resource-path="$(dirname "$md")" \
+      --metadata pagetitle="$rel" \
+      -o "$out"
+    echo "OK   $rel"
+    exit 0
+  fi
+  html="$tmp/page.html"
   pandoc "$md" \
     --from markdown \
     --embed-resources --standalone \
@@ -57,16 +56,25 @@ for md in $MD_FILES; do
     --resource-path="$(dirname "$md")" \
     --metadata pagetitle="$rel" \
     -o "$html"
-
   if "$CHROME" --headless --disable-gpu --no-pdf-header-footer \
       --print-to-pdf="$out" "file://$html" 2>/dev/null; then
-    count=$((count + 1))
-    echo "OK  $rel -> export/${rel%.md}.pdf"
+    echo "OK   $rel"
   else
-    fail=$((fail + 1))
     echo "FAIL $rel" >&2
+    exit 1
   fi
-done
+  exit 0
+fi
 
+# ---- 批量模式：收集文件 → xargs 并行调用自身 --one ----
+mkdir -p "$EXPORT"
+
+if [ -f "$TARGET" ] && [[ "$TARGET" == *.md ]]; then
+  "$0" --one "$TARGET" 2>&1
+else
+  find "$TARGET" -name '*.md' \
+    -not -path '*/.git/*' -not -path "$EXPORT/*" -not -path '*/attach/*' -print0 \
+    | xargs -0 -P "$JOBS" -n 1 "$0" --one 2>&1 | sort
+fi
 echo "----"
-echo "完成 $count 个，失败 $fail 个。输出目录: $EXPORT"
+echo "完成。输出目录: ${EXPORT}（MD2PDF_JOBS=$JOBS 控制并行数）"

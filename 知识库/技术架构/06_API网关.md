@@ -76,7 +76,7 @@ curl -i -X POST http://localhost:31017/services/onlyoffice/routes \
 ### 监控
 
 - 请求日志与访问记录在网关层统一采集
-- 配合 Uptime / Sentry 完成服务可用性与错误监控（见 [应用监控](../02_开发工具/02_应用监控.md)）
+- 配合 Uptime / Sentry 完成服务可用性与错误监控（见 [应用监控](../开发工具/02_应用监控.md)）
 
 ## 灾备切换
 

@@ -37,6 +37,17 @@ script/md2pdf.sh 操作文档/公共操作/账号管理.md
 - 输出位置：`export/<原相对路径>.pdf`（如 `操作文档/DC_数据中心/README.pdf`）；`export/` 为生成物，不入库
 - 样式（A4、中文字体、表格边框、图片限宽）集中在脚本头部 `CSS` 变量，可按需调整
 
+### 同步到 Nextcloud 知识库（`script/sync_nextcloud.sh`）
+
+把 `知识库/`、`操作文档/` 同步到 Nextcloud 的 `.知识库` 文件夹（脚本头部的 `DST` 路径）。
+
+```bash
+script/sync_nextcloud.sh
+```
+
+- 目标里**存在同名文件夹才复制**，没有的自动跳过（如 LMS_物流管理）
+- 只增改、不删目标文件；按文件大小和时间增量复制，重复运行无副作用
+
 ---
 
 ## 附件
