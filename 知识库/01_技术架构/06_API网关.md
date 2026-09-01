@@ -34,7 +34,7 @@
 
 **要点：**
 
-- 对外 URL 统一带 `api` 前缀（如 `api.xxx.com/api/v1/users`），前缀由网关配置剥离，服务实现无需处理（见 [API 规范](../02_开发规范/02_API规范.md)）
+- 对外 URL 统一带 `api` 前缀（如 `api.xxx.com/api/v1/users`），前缀由网关配置剥离，服务实现无需处理（见 [API 规范](08_API规范.md)）
 - 反向代理场景需设置 `preserve_host=true`，否则回调 URL 会丢失端口号（如 OnlyOffice）
 - WebSocket 升级需在路由上显式支持（如 OnlyOffice 文档协作通道）
 
@@ -76,7 +76,7 @@ curl -i -X POST http://localhost:31017/services/onlyoffice/routes \
 ### 监控
 
 - 请求日志与访问记录在网关层统一采集
-- 配合 Uptime / Sentry 完成服务可用性与错误监控（见 [应用监控](../03_开发工具/02_应用监控.md)）
+- 配合 Uptime / Sentry 完成服务可用性与错误监控（见 [应用监控](../02_开发工具/02_应用监控.md)）
 
 ## 灾备切换
 
@@ -85,10 +85,10 @@ curl -i -X POST http://localhost:31017/services/onlyoffice/routes \
 - 日常状态：两地 Upstream 均指向厦门本地后端服务
 - 灾难切换：管理员手动修改湖北 Kong 的 Upstream 地址，将流量切入湖北本地重建的服务集群
 
-详见 [灾备规划方案](../../02_方案/基础设施/灾备规划方案.md)。
+详见《灾备规划方案》（信息部内部文档）。
 
 ## 相关文档
 
 - [权限服务](03_权限服务.md) — auth-check 插件详细配置
-- [API 规范](../02_开发规范/02_API规范.md) — URL 前缀与路由约定
+- [API 规范](08_API规范.md) — URL 前缀与路由约定
 - [服务体系](01_服务体系.md) — 整体架构与数据流向
