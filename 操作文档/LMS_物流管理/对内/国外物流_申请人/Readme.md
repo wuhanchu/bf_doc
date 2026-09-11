@@ -43,7 +43,7 @@
 
 **绑定方法**：PC 登录协同平台 → 右上角头像 → **个人中心** → 绑定公众号 → 微信扫码 → 微信里确认授权。
 
-![image-20260910145016911](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20260910145016911.png)
+![个人中心与绑定公众号入口](attach/个人中心.png)
 
 1. 「修改密码」按钮；
 2. 「解绑微信公众号」按钮，未绑定时此处为绑定入口；
