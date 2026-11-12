@@ -137,7 +137,7 @@ Apifox 官方提供 MCP Server，AI 编程工具（OpenCode、Claude 等）接�
 
 ### 配置示例（OpenCode）
 
-![](attach/apifox_mcp配置入口.png)
+![](../_attach/apifox_mcp配置入口.png)
 
 打开任意接口的文档页面，点击接口名称右侧的 **AI 图标**（图中箭头处），即可查看本项目的 MCP 接入信息（含项目 ID），按提示复制配置即可使用。
 

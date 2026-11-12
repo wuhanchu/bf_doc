@@ -24,9 +24,13 @@ if [ "${1:-}" = "--one" ]; then
   md="$1"
   rel="${md#"$ROOT"/}"
   out="$EXPORT/${rel%.md}.pdf"
-  # md 与同目录 attach/ 都没有比 PDF 新 → 跳过
+  # md 与所属板块 attach/（向上查找最近的）都没有比 PDF 新 → 跳过
+  attach_dir="$(dirname "$md")"
+  while [ "$attach_dir" != "$ROOT" ] && [ "$attach_dir" != "/" ] && [ ! -d "$attach_dir/_attach" ]; do
+    attach_dir="$(dirname "$attach_dir")"
+  done
   if [ -f "$out" ] && [ "$out" -nt "$md" ] \
-     && ! find "$(dirname "$md")/attach" -newer "$out" -print -quit 2>/dev/null | grep -q .; then
+     && ! find "$attach_dir/_attach" -newer "$out" -print -quit 2>/dev/null | grep -q .; then
     echo "SKIP $rel"
     exit 0
   fi

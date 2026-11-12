@@ -21,20 +21,20 @@
 
 1. 使用 堡垒机 连接到集群的主节点对应的远程桌面。
 
-![](attach/sqlserver_堡垒机远程桌面.png)
+![](_attach/sqlserver_堡垒机远程桌面.png)
 
 2. 使用 Sql Server Management Studio 连上本地数据库，选择对应的操作的集群。
 
-![](attach/sqlserver_ssms连接集群.png)
+![](_attach/sqlserver_ssms连接集群.png)
 
 3. 可以看到集群当前的情况和主节点，在备节点上 右键 选择 **切换成主节点。**
 
-![](attach/sqlserver_集群节点列表.png)
+![](_attach/sqlserver_集群节点列表.png)
 
 4. 开始切换节点，需要等待一点的时间。
 
-![](attach/sqlserver_主节点切换中.png)
+![](_attach/sqlserver_主节点切换中.png)
 
 5. 切换完，可以看到 **主节点** 已经切换到另一台服务器上。
 
-![](attach/sqlserver_主节点切换完成.png)
+![](_attach/sqlserver_主节点切换完成.png)
