@@ -11,6 +11,7 @@
 - 每层可有一个 `Readme.md` 作为该文件夹的索引/说明（如 `知识库/Readme.md`、系统级索引），保持 Readme.md 命名
 - 新增文档：直接在对应目录建 `NN_中文标题.md`
 - 文档内不加 YAML front matter（曾试过 `typora-copy-images-to`，因 Nextcloud 网页端显示脏已移除）
+- 唯一例外：根目录 `home.md` 是 Wiki.js 首页（默认路径 `/home`），必须带 front matter（title/published/date 等）；页内链接用 wiki 路径（md 路径去掉 `.md`，精确匹配文件名）。注意 `_attach/` 相对图片路径在 Wiki.js 不解析（它只认 `/assets/<仓库相对路径>`），home.md 里不要放相对路径图片
 
 ## 附件（板块级共享 `_attach/`）
 
